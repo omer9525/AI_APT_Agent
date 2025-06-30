@@ -20,7 +20,7 @@ st.set_page_config(page_title="בוט חכם לחיפוש דירות", layout="c
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# 🧼 Clear input after rerun (if needed)
+# Clear input after rerun (if needed)
 if "clear_input" in st.session_state:
     st.session_state.input = ""
     del st.session_state.clear_input
@@ -149,22 +149,17 @@ for msg in st.session_state.chat_history:
     st.markdown(f"<div class='chat-bubble {cls}'>{msg['content']}</div>", unsafe_allow_html=True)
 
 # --- Input area ---
-cols = st.columns([10, 1])
-with cols[0]:
-    user_msg = st.text_input(
-        "הקלד כאן",
-        key="input",
-        label_visibility="collapsed",
-        placeholder="כתוב כאן את ההודעה שלך..."
-    )
-with cols[1]:
-    send = st.button("←", use_container_width=True)
+with st.form(key="input_form", clear_on_submit=True):
+    cols = st.columns([10, 1])
+    with cols[0]:
+        user_msg = st.text_input(
+            "הקלד כאן",
+            label_visibility="collapsed",
+            placeholder="כתוב כאן את ההודעה שלך..."
+        )
+    with cols[1]:
+        send = st.form_submit_button("←")
 
-# Support Enter as send:
-if user_msg and not send:
-    send = True
-
-# Handle message
 if send and user_msg.strip():
     user_msg = user_msg.strip()
     st.session_state.chat_history.append({"role": "user", "content": user_msg})
@@ -245,5 +240,6 @@ if send and user_msg.strip():
         st.session_state.chat_history.append({"role": "assistant", "content": f"שגיאה: {str(e)}"})
 
     st.rerun()
+
 
 st.markdown("</div>", unsafe_allow_html=True)
